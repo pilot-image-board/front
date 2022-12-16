@@ -2,9 +2,23 @@ import { createPinia } from "pinia";
 import { createApp } from "vue";
 import App from "./App.vue";
 import "./registerServiceWorker";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import {
+  faUser,
+  faSearch,
+  faCheckSquare,
+  faCircleExclamation,
+} from "@fortawesome/free-solid-svg-icons";
 import router from "./router";
 import "@/assets/style/main.scss";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
 const pinia = createPinia();
 
-createApp(App).use(router).use(pinia).mount("#app");
+library.add(faUser, faSearch, faCheckSquare, faCircleExclamation);
+
+createApp(App)
+  .component("font-awesome-icon", FontAwesomeIcon)
+  .use(router)
+  .use(pinia)
+  .mount("#app");
