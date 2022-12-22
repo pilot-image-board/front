@@ -48,16 +48,4 @@ export default {
 };
 </script>
 
-<style scoped>
-.pilot-logo {
-  height: 96px;
-  width: auto;
-}
-
-@media (max-width: 650px) {
-  .pilot-logo {
-    height: 64px;
-    width: auto;
-  }
-}
-</style>
+<style scoped></style>
