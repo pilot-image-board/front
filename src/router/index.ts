@@ -28,6 +28,30 @@ const routes: Array<RouteRecordRaw> = [
       title: "Sign In",
     },
   },
+  {
+    path: "/:boardId",
+    name: "board",
+    component: () => import("../views/board/BoardView.vue"),
+    meta: {
+      title: "Board",
+    },
+  },
+  {
+    path: "/:boardId/threads/:threadId",
+    name: "thread",
+    component: () => import("../views/thread/ThreadView.vue"),
+    meta: {
+      title: "Thread",
+    },
+  },
+  {
+    path: "/:pathMatch(.*)*",
+    name: "not-found",
+    component: () => import("../views/common/NotFoundView.vue"),
+    meta: {
+      title: "Not Found",
+    },
+  },
 ];
 
 const router = createRouter({

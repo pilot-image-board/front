@@ -31,7 +31,7 @@ try {
 <template>
   <router-link
     class="d-block"
-    :to="{ name: 'home' }"
+    :to="{ name: 'board', params: { id: board.id } }"
     v-for="board in boards"
     :key="board.id"
     v-html="board.title"
