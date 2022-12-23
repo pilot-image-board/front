@@ -35,7 +35,7 @@ const alertIcon = (type: string) => {
       :class="alertColor(alert.type)"
       :key="index"
     >
-      <font-awesome-icon :icon="alertIcon(alert.type)" size="xl" class="me-2" />
+      <font-awesome-icon :icon="alertIcon(alert.type)" size="lg" class="me-2" />
       <div>
         {{ alert.description }}
       </div>

@@ -3,18 +3,20 @@ import { ref, defineProps } from "vue";
 import { Thread } from "@/models";
 import { threadService } from "@/services";
 import { useAlertsStore } from "@/stores";
-import CardComponent from "@/components/common/CardComponent.vue";
 import InfiniteLoading from "v3-infinite-loading";
-import "v3-infinite-loading/lib/style.css";
 import LoadingComponent from "@/App.vue";
-import PostList from "@/components/post/PostList.vue";
-import AuthorBadge from "@/components/common/AuthorBadge.vue";
+import ThreadItem from "@/components/thread/ThreadItem.vue";
 
 // props
 const props = defineProps({
   boardId: {
     type: Number,
     required: true,
+  },
+  preview: {
+    type: Boolean,
+    required: false,
+    default: false,
   },
 });
 
@@ -52,35 +54,12 @@ const loadMore = async () => {
 </script>
 
 <template>
-  <card-component class="mb-3" v-for="thread in threads" :key="thread.id">
-    <template #header>
-      <div class="d-flex flex-column">
-        <div class="d-flex flex-row justify-content-between mb-1">
-          <h2>{{ thread.title }}</h2>
-          <router-link
-            :to="{
-              name: 'thread',
-              params: { boardId: thread.boardId, threadId: thread.id },
-            }"
-            class="btn btn-primary"
-            style="height: fit-content"
-          >
-            See more
-          </router-link>
-        </div>
-        <div class="d-flex flex-row flex-wrap align-items-baseline">
-          <author-badge :authorId="thread.creatorId" class="me-2 mb-1" />
-          <span class="badge ml-2 bg-secondary mt-1">
-            Posted on {{ new Date(thread.createdAt).toLocaleDateString() }}
-          </span>
-        </div>
-      </div>
-    </template>
-    <template #body>
-      <p>{{ thread.description }}</p>
-      <post-list :thread-id="thread.id" :preview="true" />
-    </template>
-  </card-component>
+  <thread-item
+    :thread="thread"
+    v-for="thread in threads"
+    :key="thread.id"
+    :preview="true"
+  />
   <infinite-loading @infinite="loadMore" />
   <loading-component v-if="loading" />
 </template>

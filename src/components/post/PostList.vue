@@ -2,12 +2,10 @@
 import { ref, defineProps } from "vue";
 import { useAlertsStore } from "@/stores";
 import CardComponent from "@/components/common/CardComponent.vue";
-import InfiniteLoading from "v3-infinite-loading";
-import "v3-infinite-loading/lib/style.css";
-import LoadingComponent from "@/App.vue";
 import { Post } from "@/models";
 import { postService } from "@/services";
 import AuthorBadge from "@/components/common/AuthorBadge.vue";
+import PostTimeBadge from "@/components/common/PostTimeBadge.vue";
 
 // props
 const props = defineProps({
@@ -30,7 +28,7 @@ let limit: number;
 if (props.preview) {
   limit = 4;
 } else {
-  limit = 10;
+  limit = 10000;
 }
 
 // logic
@@ -59,8 +57,12 @@ const loadMore = async () => {
   }
 };
 
-if (props.preview) {
-  loadMore();
+await loadMore();
+
+if (!props.preview) {
+  setTimeout(() => {
+    loadMore();
+  }, 15000);
 }
 </script>
 
@@ -69,19 +71,13 @@ if (props.preview) {
     <template #header>
       <div class="d-flex flex-row flex-wrap align-items-baseline">
         <author-badge :author-id="post.creatorId" class="me-2 mb-1" />
-        <span class="badge bg-secondary mt-1">
-          Posted on {{ new Date(post.createdAt).toLocaleDateString() }}
-        </span>
+        <post-time-badge :creation-date="post.createdAt" />
       </div>
     </template>
     <template #body>
       {{ post.description }}
     </template>
   </card-component>
-  <template v-if="!preview">
-    <infinite-loading @infinite="loadMore" />
-    <loading-component v-if="loading" />
-  </template>
 </template>
 
 <script lang="ts">

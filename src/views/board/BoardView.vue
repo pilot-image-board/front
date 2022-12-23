@@ -4,7 +4,6 @@ import { Board } from "@/models";
 import { boardService } from "@/services";
 import { useRoute, useRouter } from "vue-router";
 import { useAlertsStore } from "@/stores";
-import CardComponent from "@/components/common/CardComponent.vue";
 import ThreadList from "@/components/thread/ThreadList.vue";
 
 // Router and route
@@ -52,10 +51,10 @@ if (Number.isNaN(+boardId)) {
 </script>
 
 <template>
-  <article>
+  <article class="h-100 min-vh-75 pb-3">
     <h1>{{ board.title }}</h1>
     <p>{{ board.description }}</p>
-    <thread-list :board-id="board.id" />
+    <thread-list :board-id="board.id" :preview="true" />
   </article>
 </template>
 
