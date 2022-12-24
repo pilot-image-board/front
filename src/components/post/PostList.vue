@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { ref, defineProps } from "vue";
-import { useAlertsStore } from "@/stores";
+import { useAlertsStore, usePostsStore } from "@/stores";
 import CardComponent from "@/components/common/CardComponent.vue";
-import { Post } from "@/models";
 import { postService } from "@/services";
 import AuthorBadge from "@/components/common/AuthorBadge.vue";
 import PostTimeBadge from "@/components/common/PostTimeBadge.vue";
+import { Post } from "@/models";
 
 // props
 const props = defineProps({
@@ -20,7 +20,7 @@ const props = defineProps({
 });
 
 // refs
-const posts = ref([] as Post[]);
+let posts = ref([] as Post[]);
 const loading = ref(false);
 const offset = ref(0);
 let limit: number;
@@ -29,6 +29,7 @@ if (props.preview) {
   limit = 4;
 } else {
   limit = 10000;
+  usePostsStore().resetPosts();
 }
 
 // logic
@@ -40,11 +41,12 @@ const loadMore = async () => {
       offset: offset.value,
       threadId: props.threadId,
     });
-    response.data.results.forEach((result: Post) => {
-      if (!posts.value.some((post: Post) => post.id === result.id)) {
-        posts.value.push(result);
-      }
-    });
+    if (props.preview) {
+      posts.value = response.data.results;
+    } else {
+      usePostsStore().addPosts(response.data.results);
+      posts.value = usePostsStore().posts;
+    }
     offset.value = offset.value + 10;
     loading.value = false;
   } catch (error: any) {

@@ -59,6 +59,7 @@ const loadMore = async () => {
     v-for="thread in threads"
     :key="thread.id"
     :preview="true"
+    class="mb-3"
   />
   <infinite-loading @infinite="loadMore" />
   <loading-component v-if="loading" />

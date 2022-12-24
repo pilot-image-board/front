@@ -1,1 +1,2 @@
-export * from "./thread.shema";
+export * from "./thread.schema";
+export * from "./post.schema";
