@@ -69,6 +69,46 @@ const routes: Array<RouteRecordRaw> = [
     },
   },
   {
+    path: "/admin",
+    name: "admin",
+    component: () => import("../views/admin/AdminView.vue"),
+    meta: {
+      title: "Admin",
+    },
+  },
+  {
+    path: "/create-category",
+    name: "create-category",
+    component: () => import("../views/admin/CreateCategoryView.vue"),
+    meta: {
+      title: "Create Category",
+    },
+  },
+  {
+    path: "/category/:categoryId/edit",
+    name: "edit-category",
+    component: () => import("../views/admin/EditCategoryView.vue"),
+    meta: {
+      title: "Edit Category",
+    },
+  },
+  {
+    path: "/create-board",
+    name: "create-board",
+    component: () => import("../views/admin/CreateBoardView.vue"),
+    meta: {
+      title: "Create Category",
+    },
+  },
+  {
+    path: "/board/:boardId/edit",
+    name: "edit-board",
+    component: () => import("../views/admin/EditBoardView.vue"),
+    meta: {
+      title: "Edit Category",
+    },
+  },
+  {
     path: "/signup",
     name: "signup",
     component: SignUpView,

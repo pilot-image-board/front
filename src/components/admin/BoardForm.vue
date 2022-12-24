@@ -56,7 +56,7 @@ const onSubmit = (values: never, actions: never) => {
     style="max-width: 500px; width: 100%"
   >
     <div class="mb-3">
-      <label for="categoryId" class="form-label">Name</label>
+      <label for="categoryId" class="form-label">Category</label>
       <Field
         as="select"
         name="categoryId"

@@ -50,6 +50,7 @@ const onSubmit = async (values: Board, actions: any) => {
         name: "admin",
       });
     }
+    throw error;
   }
 };
 </script>

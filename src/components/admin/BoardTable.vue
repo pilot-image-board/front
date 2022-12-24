@@ -2,7 +2,7 @@
 import { boardService, categoryService } from "@/services";
 import { useAlertsStore } from "@/stores";
 import CustomModal from "@/components/common/CustomModal.vue";
-import { computed, ref } from "vue";
+import { ref } from "vue";
 import { Board } from "@/models";
 import BoardCategory from "@/components/board/BoardCategory.vue";
 
