@@ -12,7 +12,7 @@ export const threadService = {
     return apiService.post("/threads", data);
   },
   updateThread: (id: number, data: Thread) => {
-    return apiService.put(`/threads/${id}`, data);
+    return apiService.patch(`/threads/${id}`, data);
   },
   deleteThread: (id: number) => {
     return apiService.delete(`/threads/${id}`);

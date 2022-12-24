@@ -12,7 +12,7 @@ export const categoryService = {
     return apiService.post("/categories", data);
   },
   updateCategory: (id: number, data: Category) => {
-    return apiService.put(`/categories/${id}`, data);
+    return apiService.patch(`/categories/${id}`, data);
   },
   deleteCategory: (id: number) => {
     return apiService.delete(`/categories/${id}`);

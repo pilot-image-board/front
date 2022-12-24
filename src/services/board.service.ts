@@ -12,7 +12,7 @@ export const boardService = {
     return apiService.post("/boards", data);
   },
   updateBoard: (id: number, data: Board) => {
-    return apiService.put(`/boards/${id}`, data);
+    return apiService.patch(`/boards/${id}`, data);
   },
   deleteBoard: (id: number) => {
     return apiService.delete(`/boards/${id}`);

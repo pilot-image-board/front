@@ -14,7 +14,7 @@ export const userService = {
     return apiService.post("/users", data);
   },
   updateUser: (id: number, data: any) => {
-    return apiService.put(`/users/${id}`, data);
+    return apiService.patch(`/users/${id}`, data);
   },
   deleteUser: (id: number) => {
     return apiService.delete(`/users/${id}`);
