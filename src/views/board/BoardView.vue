@@ -54,6 +54,12 @@ if (Number.isNaN(+boardId)) {
   <article class="h-100 min-vh-75 pb-3">
     <h1>{{ board.title }}</h1>
     <p>{{ board.description }}</p>
+    <router-link
+      :to="{ name: 'start-thread', params: { boardId: board.id } }"
+      class="btn btn-primary mb-3"
+    >
+      Start a new thread
+    </router-link>
     <thread-list :board-id="board.id" :preview="true" />
   </article>
 </template>

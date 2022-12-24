@@ -37,6 +37,14 @@ const routes: Array<RouteRecordRaw> = [
     },
   },
   {
+    path: "/:boardId/start-thread",
+    name: "start-thread",
+    component: () => import("../views/thread/StartThreadView.vue"),
+    meta: {
+      title: "Start Thread",
+    },
+  },
+  {
     path: "/:boardId/threads/:threadId",
     name: "thread",
     component: () => import("../views/thread/ThreadView.vue"),
