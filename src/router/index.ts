@@ -6,11 +6,22 @@ import { useUserStore } from "@/stores";
 
 const DEFAULT_TITLE = "Pilot";
 
+const enum User {
+  ANONYMOUS,
+  NOT_AUTHENTICATED,
+  AUTHENTICATED,
+  ADMIN,
+}
+
 const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
     name: "home",
     component: HomeView,
+    meta: {
+      title: "Home",
+      security: User.ANONYMOUS,
+    },
   },
   {
     path: "/admin",
@@ -18,6 +29,7 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import("../views/admin/AdminView.vue"),
     meta: {
       title: "Admin",
+      security: User.ADMIN,
     },
   },
   {
@@ -26,6 +38,7 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import("../views/admin/CreateCategoryView.vue"),
     meta: {
       title: "Create Category",
+      security: User.ADMIN,
     },
   },
   {
@@ -34,6 +47,7 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import("../views/admin/EditCategoryView.vue"),
     meta: {
       title: "Edit Category",
+      security: User.ADMIN,
     },
   },
   {
@@ -42,6 +56,7 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import("../views/admin/CreateBoardView.vue"),
     meta: {
       title: "Create Category",
+      security: User.ADMIN,
     },
   },
   {
@@ -50,6 +65,7 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import("../views/admin/EditBoardView.vue"),
     meta: {
       title: "Edit Category",
+      security: User.ADMIN,
     },
   },
   {
@@ -58,6 +74,7 @@ const routes: Array<RouteRecordRaw> = [
     component: SignUpView,
     meta: {
       title: "Sign Up",
+      security: User.NOT_AUTHENTICATED,
     },
   },
   {
@@ -66,6 +83,7 @@ const routes: Array<RouteRecordRaw> = [
     component: SignInView,
     meta: {
       title: "Sign In",
+      security: User.NOT_AUTHENTICATED,
     },
   },
   {
@@ -74,6 +92,7 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import("../views/board/BoardView.vue"),
     meta: {
       title: "Board",
+      security: User.ANONYMOUS,
     },
   },
   {
@@ -82,6 +101,7 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import("../views/thread/StartThreadView.vue"),
     meta: {
       title: "Start Thread",
+      security: User.AUTHENTICATED,
     },
   },
   {
@@ -90,6 +110,7 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import("../views/thread/ThreadView.vue"),
     meta: {
       title: "Thread",
+      security: User.ANONYMOUS,
     },
   },
   {
@@ -98,6 +119,7 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import("../views/common/NotFoundView.vue"),
     meta: {
       title: "Not Found",
+      security: User.ANONYMOUS,
     },
   },
 ];
@@ -110,14 +132,24 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const userStore = useUserStore();
   userStore.initUser();
-  if (
-    (to.name === "signin" || to.name === "signup") &&
-    userStore.isConnected()
-  ) {
-    next({ name: "home" });
-  }
   document.title = to.meta.title ? String(to.meta.title) : DEFAULT_TITLE;
-  next();
+  if (to.meta.security === User.NOT_AUTHENTICATED && userStore.isConnected()) {
+    next({ name: "home" });
+  } else if (to.meta.security === User.ADMIN) {
+    if (userStore.isConnected() && userStore.isAdmin()) {
+      next();
+    } else {
+      next({ name: "home" });
+    }
+  } else if (to.meta.security === User.AUTHENTICATED) {
+    if (userStore.isConnected()) {
+      next();
+    } else {
+      next({ name: "signin" });
+    }
+  } else {
+    next();
+  }
 });
 
 export default router;
