@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import BoardForm from "@/components/admin/BoardForm.vue";
 import { useRoute, useRouter } from "vue-router";
-import { boardService } from "@/services";
+import { authService, boardService } from "@/services";
 import { Board } from "@/models";
 import { ref } from "vue";
 import { useAlertsStore } from "@/stores";
@@ -24,7 +24,7 @@ if (Number.isNaN(boardId)) {
   try {
     board.value = (await boardService.getBoard(boardId)).data;
   } catch (error: any) {
-    if (error.response.status === 404) {
+    if (error?.response?.status === 404) {
       router.replace({
         name: "not-found",
         params: { pathMatch: route.path.substring(1).split("/") },
@@ -57,13 +57,24 @@ const onSubmit = async (values: Board, actions: any) => {
     });
   } catch (error: any) {
     if (
-      error.response &&
-      error.response.status === 400 &&
+      error?.response?.status === 400 &&
       error.response.data.error.code === 2000 &&
       error.response.data.error.field === "title"
     ) {
       actions.setErrors({
         title: "Board with this title already exists",
+      });
+    } else if (error?.response?.status === 401) {
+      if (await authService.refresh()) {
+        await onSubmit(values, actions);
+      } else {
+        await router.push({
+          name: "signin",
+        });
+      }
+    } else if (error?.response?.status === 403) {
+      await router.push({
+        name: "home",
       });
     } else {
       alertsStore.addAlert({

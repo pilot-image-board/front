@@ -108,6 +108,7 @@ try {
     <p>Are you sure you want to delete this board?</p>
     <template #footer>
       <button class="btn btn-secondary" @click="closeDeleteModal">
+        <font-awesome-icon icon="arrow-left" />
         Cancel
       </button>
       <button class="btn btn-danger" @click="handleDelete">Delete</button>

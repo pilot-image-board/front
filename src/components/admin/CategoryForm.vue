@@ -61,6 +61,7 @@ const onSubmit = (values: never, actions: never) => {
     </div>
     <div class="d-flex flex-row justify-content-center">
       <router-link :to="{ name: 'admin' }" class="btn btn-secondary me-2">
+        <font-awesome-icon icon="arrow-left" />
         Cancel
       </router-link>
       <button type="submit" class="btn btn-primary">Submit</button>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useAlertsStore } from "@/stores";
 import { useRoute, useRouter } from "vue-router";
-import { boardService, threadService } from "@/services";
+import { authService, boardService, threadService } from "@/services";
 import { ref } from "vue";
 import { Board, Thread } from "@/models";
 import ThreadForm from "@/components/thread/ThreadForm.vue";
@@ -57,11 +57,19 @@ const onSubmit = async (values: Thread, actions: any) => {
       params: { boardId: boardId, threadId: response.data.id },
     });
   } catch (error: any) {
-    useAlertsStore().addAlert({
-      type: "error",
-      description: "Something went wrong... Try again later",
-      timeout: 5000,
-    });
+    if (error?.response?.status === 401) {
+      if (await authService.refresh()) {
+        await onSubmit(values, actions);
+      } else {
+        await router.push({ name: "signin" });
+      }
+    } else {
+      useAlertsStore().addAlert({
+        type: "error",
+        description: "Something went wrong... Try again later",
+        timeout: 5000,
+      });
+    }
   }
 };
 </script>

@@ -2,10 +2,16 @@
 import { useRoute, useRouter } from "vue-router";
 import { Board, Post, Thread } from "@/models";
 import { ref } from "vue";
-import { useAlertsStore, usePostsStore } from "@/stores";
-import { boardService, threadService, postService } from "@/services";
+import { useAlertsStore, usePostsStore, useUserStore } from "@/stores";
+import {
+  boardService,
+  threadService,
+  postService,
+  authService,
+} from "@/services";
 import ThreadItem from "@/components/thread/ThreadItem.vue";
 import PostForm from "@/components/post/PostForm.vue";
+import { AxiosError } from "axios";
 
 // route and router
 const route = useRoute();
@@ -66,20 +72,29 @@ if (Number.isNaN(threadId) || Number.isNaN(boardId)) {
 const onSubmit = async (values: Post, actions: any) => {
   try {
     const response = await postService.createPost(values);
-    actions.resetForm();
+    actions.setFieldValue("description", "");
     useAlertsStore().addAlert({
       type: "success",
       description: "Post created successfully",
       timeout: 5000,
     });
     usePostsStore().addPosts([response.data]);
-  } catch (error: any) {
-    useAlertsStore().addAlert({
-      type: "error",
-      description: "Something went wrong... Try again later",
-      timeout: 5000,
-    });
-    throw error;
+  } catch (error: any | AxiosError) {
+    if (error?.response?.status === 401) {
+      if (await authService.refresh()) {
+        await onSubmit(values, actions);
+      } else {
+        await router.push({
+          name: "signin",
+        });
+      }
+    } else {
+      useAlertsStore().addAlert({
+        type: "error",
+        description: "Something went wrong... Try again later",
+        timeout: 5000,
+      });
+    }
   }
 };
 </script>
@@ -95,12 +110,19 @@ const onSubmit = async (values: Post, actions: any) => {
       <font-awesome-icon icon="arrow-left" />
       Go back
     </router-link>
-    <a href="#create-post-form" class="btn btn-primary mb-3 ms-2">
+    <a href="#post-an-answer" class="btn btn-primary mb-3 ms-2">
       Post an answer
     </a>
     <thread-item :thread="thread" />
-    <div class="d-flex justify-content-center">
-      <post-form @form-submitted="onSubmit" :thread-id="thread.id" />
+    <div id="post-an-answer" class="d-flex justify-content-center">
+      <post-form
+        v-if="useUserStore().isConnected()"
+        @form-submitted="onSubmit"
+        :thread-id="thread.id"
+      />
+      <router-link :to="{ name: 'signin' }" v-else class="btn btn-primary mt-3">
+        Sign in to post an answer
+      </router-link>
     </div>
   </article>
 </template>

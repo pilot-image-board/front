@@ -2,7 +2,7 @@
 import CategoryForm from "@/components/admin/CategoryForm.vue";
 import { Category } from "@/models";
 import { useRouter } from "vue-router";
-import { categoryService } from "@/services";
+import { authService, categoryService } from "@/services";
 import { useAlertsStore } from "@/stores";
 
 const router = useRouter();
@@ -21,13 +21,24 @@ const onSubmit = async (values: Category, actions: any) => {
     });
   } catch (error: any) {
     if (
-      error.response &&
-      error.response.status === 400 &&
+      error?.response?.status === 400 &&
       error.response.data.error.code === 2000 &&
       error.response.data.error.field === "name"
     ) {
       actions.setErrors({
         name: ["A category with this name already exists"],
+      });
+    } else if (error?.response?.status === 401) {
+      if (await authService.refresh()) {
+        await onSubmit(values, actions);
+      } else {
+        await router.push({
+          name: "home",
+        });
+      }
+    } else if (error?.response?.status === 403) {
+      await router.push({
+        name: "home",
       });
     } else {
       alertsStore.addAlert({
@@ -39,7 +50,6 @@ const onSubmit = async (values: Category, actions: any) => {
         name: "admin",
       });
     }
-    throw error;
   }
 };
 </script>

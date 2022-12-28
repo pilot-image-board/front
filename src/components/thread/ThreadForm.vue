@@ -59,6 +59,7 @@ const onSubmit = (values: never, actions: never) => {
         :to="{ name: 'board', params: { boardId } }"
         class="btn btn-secondary me-2"
       >
+        <font-awesome-icon icon="arrow-left" />
         Cancel
       </router-link>
       <button type="submit" class="btn btn-primary">Submit</button>

@@ -39,7 +39,6 @@ export const authService = {
       localStorage.setItem("refresh_token", response.data.refresh_token);
       useUserStore().initUser();
       refreshApiService();
-      console.log("OK");
       return true;
     } catch (error) {
       useUserStore().emptyUser();

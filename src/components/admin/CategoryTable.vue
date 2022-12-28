@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { useAlertsStore } from "@/stores";
-import { categoryService } from "@/services";
+import { authService, categoryService } from "@/services";
 import CustomModal from "@/components/common/CustomModal.vue";
 import { ref, defineEmits } from "vue";
 import { Category } from "@/models";
+import router from "@/router";
 
 const alertsStore = useAlertsStore();
 
@@ -50,12 +51,22 @@ const handleDelete = async () => {
       );
       closeDeleteModal();
     }
-  } catch (error) {
-    alertsStore.addAlert({
-      type: "error",
-      description: "Error deleting category, refresh page and try again",
-      timeout: 5000,
-    });
+  } catch (error: any) {
+    if (error?.response?.status === 401) {
+      if (await authService.refresh()) {
+        await handleDelete();
+      } else {
+        await router.push({ name: "signin" });
+      }
+    } else if (error?.response?.status === 403) {
+      await router.push({ name: "signin" });
+    } else {
+      alertsStore.addAlert({
+        type: "error",
+        description: "Error deleting category, refresh page and try again",
+        timeout: 5000,
+      });
+    }
   }
 };
 </script>
@@ -110,6 +121,7 @@ const handleDelete = async () => {
     <p>Are you sure you want to delete this category?</p>
     <template #footer>
       <button class="btn btn-secondary" @click="closeDeleteModal">
+        <font-awesome-icon icon="arrow-left" />
         Cancel
       </button>
       <button class="btn btn-danger" @click="handleDelete">Delete</button>
