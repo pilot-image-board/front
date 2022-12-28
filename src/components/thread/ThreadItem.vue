@@ -35,6 +35,7 @@ defineProps({
             style="height: fit-content"
           >
             See more
+            <font-awesome-icon icon="arrow-right" />
           </router-link>
         </div>
         <div class="d-flex flex-row flex-wrap align-items-baseline">

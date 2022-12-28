@@ -92,6 +92,7 @@ const onSubmit = async (values: Post, actions: any) => {
       :to="{ name: 'board', params: { boardId: thread.boardId } }"
       class="btn btn-secondary mb-3"
     >
+      <font-awesome-icon icon="arrow-left" />
       Go back
     </router-link>
     <a href="#create-post-form" class="btn btn-primary mb-3 ms-2">

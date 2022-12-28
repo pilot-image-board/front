@@ -54,6 +54,10 @@ if (Number.isNaN(+boardId)) {
   <article class="h-100 min-vh-75 pb-3">
     <h1>{{ board.title }}</h1>
     <p>{{ board.description }}</p>
+    <router-link :to="{ name: 'home' }" class="btn btn-secondary mb-3 me-3">
+      <font-awesome-icon icon="arrow-left" />
+      Go home
+    </router-link>
     <router-link
       :to="{ name: 'start-thread', params: { boardId: board.id } }"
       class="btn btn-primary mb-3"

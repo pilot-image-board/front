@@ -12,6 +12,7 @@ const onLogout = async () => {
 </script>
 
 <template>
+  {{ userStore.user }}
   <nav
     class="d-flex flex-column align-items-center border-bottom pb-2 bg-white"
   >
@@ -38,6 +39,13 @@ const onLogout = async () => {
     </div>
     <div v-else class="mt-1">
       <button class="btn btn-danger" @click="onLogout">Log out</button>
+      <router-link
+        :to="{ name: 'admin' }"
+        v-if="userStore.user.roles.includes('admin')"
+        class="btn btn-primary ms-2"
+      >
+        Administration
+      </router-link>
     </div>
   </nav>
 </template>
