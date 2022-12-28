@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import SignInForm from "@/components/auth/SignInForm";
-import { authService } from "@/services";
+import { authService, refreshApiService } from "@/services";
 import { useAlertsStore } from "@/stores";
 import { apiService } from "@/services/api.service";
 import { useRouter } from "vue-router";
@@ -14,10 +14,9 @@ const onSubmit = async (values: User, actions: any) => {
     const response = await authService.signIn(values);
 
     localStorage.setItem("access_token", response.data.access_token);
+    localStorage.setItem("refresh_token", response.data.refresh_token);
 
-    apiService.defaults.headers.common[
-      "Authorization"
-    ] = `Bearer ${response.data.token}`;
+    refreshApiService();
 
     await router.push({
       name: "home",
