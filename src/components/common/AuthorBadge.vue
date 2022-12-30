@@ -27,7 +27,7 @@ try {
 
 <template>
   <span class="badge bg-secondary">
-    posted by {{ user?.username ?? "Unknown" }}
+    Posted by {{ user?.username ?? "Unknown" }}
   </span>
 </template>
 

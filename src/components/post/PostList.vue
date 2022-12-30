@@ -1,11 +1,16 @@
 <script setup lang="ts">
-import { ref, defineProps } from "vue";
-import { useAlertsStore, usePostsStore } from "@/stores";
+import { ref, defineProps, defineEmits } from "vue";
+import { useAlertsStore, usePostsStore, useUserStore } from "@/stores";
 import CardComponent from "@/components/common/CardComponent.vue";
 import { postService } from "@/services";
 import AuthorBadge from "@/components/common/AuthorBadge.vue";
 import PostTimeBadge from "@/components/common/PostTimeBadge.vue";
 import { Post } from "@/models";
+
+const emit = defineEmits(["delete"]);
+
+const postsStore = usePostsStore();
+const userStore = useUserStore();
 
 // props
 const props = defineProps({
@@ -20,7 +25,6 @@ const props = defineProps({
 });
 
 // refs
-let posts = ref([] as Post[]);
 const loading = ref(false);
 const offset = ref(0);
 let limit: number;
@@ -42,10 +46,9 @@ const loadMore = async () => {
       threadId: props.threadId,
     });
     if (props.preview) {
-      posts.value = response.data.results;
+      postsStore.posts = response.data.results;
     } else {
-      usePostsStore().addPosts(response.data.results);
-      posts.value = usePostsStore().posts;
+      postsStore.addPosts(response.data.results);
     }
     offset.value = offset.value + 10;
     loading.value = false;
@@ -66,14 +69,29 @@ if (!props.preview) {
     loadMore();
   }, 15000);
 }
+
+const deletePost = (post: Post) => {
+  emit("delete", post);
+};
 </script>
 
 <template>
-  <card-component class="mb-3" v-for="post in posts" :key="post.id">
+  <card-component class="mb-3" v-for="post in postsStore.posts" :key="post.id">
     <template #header>
       <div class="d-flex flex-row flex-wrap align-items-baseline">
         <author-badge :author-id="post.creatorId" class="me-2 mb-1" />
-        <post-time-badge :creation-date="post.createdAt" />
+        <post-time-badge :creation-date="post.createdAt" class="me-2 mb-1" />
+        <button
+          v-if="
+            (!preview &&
+              (userStore.is('admin') || userStore.is('moderator'))) ||
+            (userStore.isConnected() && userStore.user.id === post.creatorId)
+          "
+          class="btn badge bg-danger"
+          @click="deletePost(post)"
+        >
+          Delete post
+        </button>
       </div>
     </template>
     <template #body>
