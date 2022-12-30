@@ -15,6 +15,8 @@
     "axios": "^1.2.1",
     "bootstrap": "^5.2.3",
     "core-js": "^3.8.3",
+    "jsrsasign": "^10.6.1",
+    "jsrsasign-util": "^1.0.5",
     "jwt-decode": "^3.1.2",
     "pinia": "^2.0.28",
     "register-service-worker": "^1.7.2",
@@ -26,6 +28,7 @@
     "yup": "^0.32.11"
   },
   "devDependencies": {
+    "@types/jsrsasign": "^10.5.4",
     "@typescript-eslint/eslint-plugin": "^5.4.0",
     "@typescript-eslint/parser": "^5.4.0",
     "@vue/cli-plugin-babel": "~5.0.0",
