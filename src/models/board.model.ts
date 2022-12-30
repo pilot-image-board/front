@@ -4,4 +4,5 @@ export interface Board {
   description?: string;
   createdAt?: Date;
   updatedAt?: Date;
+  categoryId?: number;
 }

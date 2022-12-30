@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { boardService } from "@/services";
+import { boardService, categoryService } from "@/services";
 import { useAlertsStore } from "@/stores";
 import CustomModal from "@/components/common/CustomModal.vue";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { Board } from "@/models";
+import BoardCategory from "@/components/board/BoardCategory.vue";
 
 const alertsStore = useAlertsStore();
 
@@ -57,6 +58,19 @@ try {
     timeout: 5000,
   });
 }
+
+const getBoardCategoryName = async (categoryId: number) => {
+  try {
+    const response = await categoryService.getCategory(categoryId);
+    return response.data.name;
+  } catch (error) {
+    alertsStore.addAlert({
+      type: "error",
+      description: "Error fetching board category",
+      timeout: 5000,
+    });
+  }
+};
 </script>
 
 <template>
@@ -76,7 +90,12 @@ try {
         <tr v-for="board in boards" :key="board.id">
           <th v-html="board.title"></th>
           <td class="text-wrap" v-html="board.description"></td>
-          <th v-html="'-'" />
+          <Suspense>
+            <board-category :category-id="board.categoryId" />
+            <template #fallback>
+              <th>-</th>
+            </template>
+          </Suspense>
           <td v-html="new Date(board.createdAt).toLocaleDateString()"></td>
           <td v-html="new Date(board.updatedAt).toLocaleDateString()"></td>
           <td class="d-flex flex-row">
