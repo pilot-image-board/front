@@ -9,12 +9,14 @@ import { useAlertsStore } from "@/stores";
 const alertsStore = useAlertsStore();
 
 const category = ref({} as Category);
+const failed = ref(false);
 
 const route = useRoute();
 const router = useRouter();
 const categoryId = +route.params.categoryId;
 
 if (Number.isNaN(categoryId)) {
+  failed.value = true;
   router.replace({
     name: "not-found",
     params: { pathMatch: route.path.substring(1).split("/") },
@@ -26,7 +28,8 @@ if (Number.isNaN(categoryId)) {
     const response = await categoryService.getCategory(categoryId);
     category.value = response.data;
   } catch (error: any) {
-    if (error.response && error.response.status === 404) {
+    if (error?.response?.status === 404) {
+      failed.value = true;
       router.replace({
         name: "not-found",
         params: { pathMatch: route.path.substring(1).split("/") },
@@ -43,7 +46,6 @@ if (Number.isNaN(categoryId)) {
         name: "admin",
       });
     }
-    throw error;
   }
 }
 
@@ -95,6 +97,7 @@ const onSubmit = async (values: Category, actions: any) => {
 
 <template>
   <article
+    v-if="!failed"
     class="bg-white container d-flex flex-column align-items-center justify-content-center border-end border-start"
     style="height: 75vh"
   >

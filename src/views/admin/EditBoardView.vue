@@ -8,12 +8,14 @@ import { useAlertsStore } from "@/stores";
 
 const alertsStore = useAlertsStore();
 
+const failed = ref(false);
 const board = ref({} as Board);
 const route = useRoute();
 const router = useRouter();
 const boardId = +route.params.boardId;
 
 if (Number.isNaN(boardId)) {
+  failed.value = true;
   router.replace({
     name: "not-found",
     params: { pathMatch: route.path.substring(1).split("/") },
@@ -22,9 +24,11 @@ if (Number.isNaN(boardId)) {
   });
 } else {
   try {
-    board.value = (await boardService.getBoard(boardId)).data;
+    const response = await boardService.getBoard(boardId);
+    board.value = response.data;
   } catch (error: any) {
     if (error?.response?.status === 404) {
+      failed.value = true;
       router.replace({
         name: "not-found",
         params: { pathMatch: route.path.substring(1).split("/") },
@@ -92,6 +96,7 @@ const onSubmit = async (values: Board, actions: any) => {
 
 <template>
   <article
+    v-if="!failed"
     class="bg-white container d-flex flex-column align-items-center justify-content-center border-start border-end"
     style="height: 75vh"
   >
