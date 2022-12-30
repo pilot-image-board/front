@@ -18,6 +18,7 @@ const route = useRoute();
 const router = useRouter();
 
 // params
+const failed = ref(false);
 const threadId = Number(route.params.threadId);
 const boardId = Number(route.params.boardId);
 
@@ -27,6 +28,7 @@ const thread = ref({} as Thread);
 
 // logic
 if (Number.isNaN(threadId) || Number.isNaN(boardId)) {
+  failed.value = true;
   router.replace({
     name: "not-found",
     params: { pathMatch: route.path.substring(1).split("/") },
@@ -38,7 +40,7 @@ if (Number.isNaN(threadId) || Number.isNaN(boardId)) {
     const boardResponse = await boardService.getBoard(boardId);
     const threadResponse = await threadService.getThread(threadId);
     if (threadResponse.data.boardId !== boardResponse.data.id) {
-      router.replace({
+      await router.replace({
         name: "not-found",
         params: { pathMatch: route.path.substring(1).split("/") },
         query: route.query,
@@ -50,6 +52,7 @@ if (Number.isNaN(threadId) || Number.isNaN(boardId)) {
     }
   } catch (error: any) {
     if (error.response && error.response.status === 404) {
+      failed.value = true;
       router.replace({
         name: "not-found",
         params: { pathMatch: route.path.substring(1).split("/") },
@@ -100,7 +103,7 @@ const onSubmit = async (values: Post, actions: any) => {
 </script>
 
 <template>
-  <article class="min-vh-75 h-100 pb-3">
+  <article class="min-vh-75 h-100 pb-3" v-if="!failed">
     <h1>{{ board.title }}</h1>
     <p>{{ board.description }}</p>
     <router-link
