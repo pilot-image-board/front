@@ -5,4 +5,5 @@ export interface Post {
   updatedAt: Date;
   threadId: number;
   creatorId: number;
+  image: string;
 }

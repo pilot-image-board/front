@@ -6,9 +6,13 @@ import { Form, Field, ErrorMessage } from "vee-validate";
 const emit = defineEmits(["form-submitted"]);
 
 defineProps({
+  boardId: {
+    type: Number,
+    required: true,
+  },
   threadId: {
     type: Number,
-    required: false,
+    required: true,
   },
 });
 
@@ -44,6 +48,16 @@ const onSubmit = (values: never, actions: never) => {
       <ErrorMessage name="description" class="text-danger form-text" />
     </div>
     <div class="d-flex flex-row justify-content-center">
+      <router-link
+        :to="{
+          name: 'thread',
+          params: { boardId: boardId, threadId: threadId },
+        }"
+        class="btn btn-secondary me-2"
+      >
+        <font-awesome-icon icon="arrow-left" />
+        Cancel
+      </router-link>
       <button type="submit" class="btn btn-primary">Submit</button>
     </div>
   </Form>

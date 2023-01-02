@@ -2,15 +2,15 @@
 import { useRoute, useRouter } from "vue-router";
 import { Board, Post, Thread } from "@/models";
 import { ref } from "vue";
-import { useAlertsStore, usePostsStore } from "@/stores";
+import { useAlertsStore } from "@/stores";
 import {
   boardService,
   threadService,
   postService,
   authService,
+  imageService,
 } from "@/services";
-import ThreadItem from "@/components/thread/ThreadItem.vue";
-import { AxiosError } from "axios";
+import PostForm from "@/components/post/PostForm.vue";
 
 // route and router
 const route = useRoute();
@@ -24,6 +24,9 @@ const boardId = Number(route.params.boardId);
 // data
 const board = ref({} as Board);
 const thread = ref({} as Thread);
+const file = ref<File | null>(null);
+const fileName = ref<string | null>(null);
+const fileError = ref<string | null>(null);
 
 // logic
 if (Number.isNaN(threadId) || Number.isNaN(boardId)) {
@@ -71,20 +74,57 @@ if (Number.isNaN(threadId) || Number.isNaN(boardId)) {
   }
 }
 
-const onSubmit = async (values: Post, actions: any) => {
+const handleFileChange = async (e: any) => {
   try {
-    const response = await postService.createPost(values);
-    actions.setFieldValue("description", "");
-    useAlertsStore().addAlert({
-      type: "success",
-      description: "Post created successfully",
-      timeout: 5000,
-    });
-    usePostsStore().addPosts([response.data]);
-  } catch (error: any | AxiosError) {
+    fileError.value = null;
+    const file = e?.target?.files[0];
+    const formData = new FormData();
+    formData.append("file", file);
+    const response = await imageService.post("/", formData);
+    fileName.value = response.data.filename;
+  } catch (error: any) {
+    if (error?.response?.status === 400) {
+      fileError.value = "Make sure the file is an image and is less than 5MB";
+    }
     if (error?.response?.status === 401) {
       if (await authService.refresh()) {
-        await onSubmit(values, actions);
+        await handleFileChange(e);
+      } else {
+        await router.push({
+          name: "signin",
+        });
+      }
+    } else {
+      useAlertsStore().addAlert({
+        type: "error",
+        description: "Something went wrong... Try again later",
+        timeout: 5000,
+      });
+    }
+  }
+};
+
+const handlePostSubmit = async (post: Post, actions: never) => {
+  try {
+    const data = {
+      ...post,
+      threadId: thread.value.id,
+    };
+    if (fileName.value) {
+      data.image = fileName.value;
+    }
+    await postService.createPost(data);
+    await router.push({
+      name: "thread",
+      params: {
+        boardId: board.value.id,
+        threadId: thread.value.id,
+      },
+    });
+  } catch (error: any) {
+    if (error?.response?.status === 401) {
+      if (await authService.refresh()) {
+        await handlePostSubmit(post, actions);
       } else {
         await router.push({
           name: "signin",
@@ -102,41 +142,38 @@ const onSubmit = async (values: Post, actions: any) => {
 </script>
 
 <template>
-  <article class="min-vh-75 h-100 pb-3" v-if="!failed">
-    <h1>{{ board.title }}</h1>
+  <article
+    class="min-vh-75 d-flex justify-content-center align-items-center flex-column"
+  >
+    <h1>Board : {{ board.title }}</h1>
     <p>{{ board.description }}</p>
-    <router-link
-      :to="{ name: 'board', params: { boardId: thread.boardId } }"
-      class="btn btn-secondary mb-3"
-    >
-      <font-awesome-icon icon="arrow-left" />
-      Go back
-    </router-link>
-    <router-link
-      :to="{
-        name: 'post',
-        params: { boardId: thread.boardId, threadId: thread.id },
-      }"
-      class="btn btn-primary mb-3 ms-2"
-    >
-      Post an answer
-    </router-link>
-    <thread-item :thread="thread" />
-    <router-link
-      :to="{
-        name: 'post',
-        params: { boardId: thread.boardId, threadId: thread.id },
-      }"
-      class="btn btn-primary mb-3 ms-2"
-    >
-      Post an answer
-    </router-link>
+    <h2>Post a reply to Thread {{ thread.title }}</h2>
+    <p>{{ thread.description }}</p>
+    <form style="max-width: 500px; width: 100%">
+      <div class="mb-3">
+        <label for="formFile" class="form-label"> Image </label>
+        <input
+          class="form-control"
+          type="file"
+          id="formFile"
+          @change="handleFileChange"
+        />
+        <div v-if="fileError" class="form-text text-danger">
+          {{ fileError }}
+        </div>
+      </div>
+    </form>
+    <post-form
+      :boardId="board.id"
+      :threadId="thread.id"
+      @form-submitted="handlePostSubmit"
+    />
   </article>
 </template>
 
 <script lang="ts">
 export default {
-  name: "ThreadView",
+  name: "CreatePostView",
 };
 </script>
 

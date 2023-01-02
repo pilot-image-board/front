@@ -154,6 +154,15 @@ const routes: Array<RouteRecordRaw> = [
     },
   },
   {
+    path: "/:boardId/threads/:threadId/post",
+    name: "post",
+    component: () => import("../views/post/CreatePostView.vue"),
+    meta: {
+      title: "Post",
+      security: User.AUTHENTICATED,
+    },
+  },
+  {
     path: "/:pathMatch(.*)*",
     name: "not-found",
     component: () => import("../views/common/NotFoundView.vue"),
