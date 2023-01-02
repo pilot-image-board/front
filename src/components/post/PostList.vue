@@ -2,7 +2,7 @@
 import { ref, defineProps, defineEmits } from "vue";
 import { useAlertsStore, usePostsStore, useUserStore } from "@/stores";
 import CardComponent from "@/components/common/CardComponent.vue";
-import { postService } from "@/services";
+import { IMAGE_SERVER_BASE_URL, postService } from "@/services";
 import AuthorBadge from "@/components/common/AuthorBadge.vue";
 import PostTimeBadge from "@/components/common/PostTimeBadge.vue";
 import { Post } from "@/models";
@@ -83,9 +83,10 @@ const deletePost = (post: Post) => {
         <post-time-badge :creation-date="post.createdAt" class="me-2 mb-1" />
         <button
           v-if="
-            (!preview &&
-              (userStore.is('admin') || userStore.is('moderator'))) ||
-            (userStore.isConnected() && userStore.user.id === post.creatorId)
+            !preview &&
+            (userStore.is('admin') ||
+              userStore.is('moderator') ||
+              (userStore.isConnected() && userStore.user.id === post.creatorId))
           "
           class="btn badge bg-danger"
           @click="deletePost(post)"
@@ -95,7 +96,16 @@ const deletePost = (post: Post) => {
       </div>
     </template>
     <template #body>
-      {{ post.description }}
+      <div class="d-flex flex-column">
+        <div v-if="post.image" class="mb-3">
+          <img
+            :src="IMAGE_SERVER_BASE_URL + '/' + post.image"
+            class="img-fluid"
+            alt="post image"
+          />
+        </div>
+        <div v-html="post.description" />
+      </div>
     </template>
   </card-component>
 </template>
