@@ -12,7 +12,6 @@ const onLogout = async () => {
 </script>
 
 <template>
-  {{ userStore.user }}
   <nav
     class="d-flex flex-column align-items-center border-bottom pb-2 bg-white"
   >
